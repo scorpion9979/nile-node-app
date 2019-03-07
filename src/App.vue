@@ -1,17 +1,54 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <NodePanel :orders="orders" @confirmOrder="confirmOrder" @denyOrder="denyOrder"/>
+    <br/>
+    <br/>
+    <ApiSimulation @debug="debug"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import NodePanel from './components/NodePanel.vue'
+import ApiSimulation from './components/ApiSimulation.vue'
 
 export default {
   name: 'app',
+  methods: {
+    confirmOrder(order) {
+      this.orders.filter(o => o.id == order.id)[0].confirmed = true
+    },
+    denyOrder(order) {
+      this.orders.filter(o => o.id == order.id)[0].confirmed = false
+      this.orders = this.orders.filter(o => o.id != order.id)
+    },
+    debug({user, cart, confirmed}) {
+      this.orders.push(({
+        id: this.orders[this.orders.length - 1].id + 1,
+        user,
+        cart,
+        confirmed
+      }))
+    }
+  },
+  data: function() {
+    return {
+      orders: [
+        {
+          id: 1,
+          user: "Ahmed",
+          cart: [
+            { id: 1, name: 'Pizza', count: 2},
+            { id: 2, name: 'Kebab', count: 1},
+            { id: 3, name: 'Wurstel', count: 1},
+            ],
+          confirmed: false
+        }
+      ]
+    }
+  },
   components: {
-    HelloWorld
+    NodePanel,
+    ApiSimulation
   }
 }
 </script>
